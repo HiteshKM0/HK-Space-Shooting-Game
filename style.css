@@ -1,0 +1,947 @@
+/* ============================================================
+   HK SPACE SHOOTING GAME — Master Stylesheet
+   Premium sci-fi cockpit aesthetic
+   ============================================================ */
+
+/* Fonts loaded via <link> in HTML — no @import needed */
+
+/* ============================================================
+   1. CSS Custom Properties
+   ============================================================ */
+:root {
+  /* ── Palette ── */
+  --cyan:          #0ff;
+  --cyan-bright:   #00e5ff;
+  --cyan-dim:      rgba(0, 220, 255, 0.35);
+  --cyan-glow:     rgba(0, 255, 255, 0.45);
+  --magenta:       #f0f;
+  --magenta-dim:   #e040fb;
+  --gold:          #ff0;
+  --gold-bright:   #ffab00;
+  --red:           #f04;
+  --red-bright:    #f44;
+  --white:         #ffffff;
+  --bg-deep:       #0a0a12;
+  --bg-panel:      rgba(10, 14, 30, 0.55);
+  --border-glass:  rgba(0, 220, 255, 0.18);
+
+  /* ── Glass ── */
+  --glass-bg:      rgba(8, 12, 28, 0.6);
+  --glass-blur:    blur(16px);
+  --glass-border:  1px solid var(--border-glass);
+
+  /* ── Spacing ── */
+  --sp-xs:  4px;
+  --sp-sm:  8px;
+  --sp-md:  16px;
+  --sp-lg:  24px;
+  --sp-xl:  32px;
+  --sp-2xl: 48px;
+
+  /* ── Typography ── */
+  --ff-heading: 'Orbitron', sans-serif;
+  --ff-body:    'Rajdhani', sans-serif;
+  --fs-xs:   10px;
+  --fs-sm:   11px;
+  --fs-md:   13px;
+  --fs-base: 14px;
+  --fs-lg:   16px;
+  --fs-xl:   18px;
+  --fs-2xl:  22px;
+  --fs-3xl:  36px;
+  --fs-4xl:  42px;
+  --fs-5xl:  48px;
+  --fs-6xl:  52px;
+  --fs-7xl:  64px;
+
+  /* ── Z-layers ── */
+  --z-hud:     2;
+  --z-overlay: 5;
+  --z-boss:    5;
+  --z-flash:   8;
+  --z-pause:   10;
+}
+
+/* ============================================================
+   2. Reset & Base
+   ============================================================ */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg-deep);
+  font-family: var(--ff-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overscroll-behavior: none;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body::-webkit-scrollbar { display: none; }
+
+/* ============================================================
+   3. Canvas
+   ============================================================ */
+canvas {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  cursor: crosshair;
+  touch-action: none;
+}
+
+/* ============================================================
+   4. UI Overlay
+   ============================================================ */
+#ui {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  padding:
+    env(safe-area-inset-top)
+    env(safe-area-inset-right)
+    env(safe-area-inset-bottom)
+    env(safe-area-inset-left);
+}
+
+/* ============================================================
+   5. HUD
+   ============================================================ */
+.hud {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: var(--sp-md);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: var(--z-hud);
+}
+
+.hud.show {
+  opacity: 1;
+}
+
+/* ── HUD Panel (glassmorphism card) ── */
+.hud-panel {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: var(--glass-border);
+  border-radius: 12px;
+  padding: 10px 16px;
+  color: var(--cyan);
+  text-shadow: 0 0 8px var(--cyan-glow);
+  min-width: 80px;
+}
+
+.hud-panel .label {
+  font-family: var(--ff-heading);
+  font-size: var(--fs-xs);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  opacity: 0.6;
+  margin-bottom: 2px;
+}
+
+.hud-panel .value {
+  font-family: var(--ff-heading);
+  font-size: var(--fs-2xl);
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* ── HUD Layout ── */
+.hud-left {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+/* ── Health Bar ── */
+.health-bar {
+  width: 180px;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 5px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.health-fill {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, #f04, #f80);
+  border-radius: 5px;
+  transition: width 0.3s ease;
+  box-shadow: 0 0 10px rgba(255, 0, 60, 0.6), 0 0 20px rgba(255, 0, 60, 0.3);
+}
+
+/* ── Shield Bar ── */
+.shield-bar {
+  width: 180px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.shield-fill {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, #0af, #0ff);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+  box-shadow: 0 0 8px rgba(0, 170, 255, 0.5), 0 0 18px rgba(0, 255, 255, 0.25);
+}
+
+/* ============================================================
+   6. Pause Button
+   ============================================================ */
+#pauseBtn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 44px;
+  height: 44px;
+  pointer-events: auto;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-radius: 10px;
+  border: 1px solid rgba(0, 220, 255, 0.3);
+  color: var(--cyan);
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: var(--z-pause);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+  line-height: 1;
+}
+
+#pauseBtn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 16px var(--cyan-glow), 0 0 32px rgba(0, 255, 255, 0.15);
+  background: rgba(0, 220, 255, 0.1);
+}
+
+#pauseBtn:active {
+  transform: scale(0.95);
+}
+
+/* ============================================================
+   7. Combo Text
+   ============================================================ */
+.combo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.7);
+  font-family: var(--ff-heading);
+  font-size: var(--fs-5xl);
+  font-weight: 900;
+  color: var(--white);
+  text-shadow:
+    0 0 12px var(--magenta),
+    0 0 24px var(--magenta-dim),
+    0 0 48px rgba(224, 64, 251, 0.3);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  z-index: var(--z-hud);
+}
+
+.combo.show {
+  opacity: 1;
+  transform: translate(-50%, -60%) scale(1);
+  animation: combo-bounce 0.4s ease-out;
+}
+
+@keyframes combo-bounce {
+  0%   { transform: translate(-50%, -60%) scale(0.5); }
+  60%  { transform: translate(-50%, -60%) scale(1.15); }
+  100% { transform: translate(-50%, -60%) scale(1); }
+}
+
+/* ============================================================
+   8. Weapon Indicator
+   ============================================================ */
+.weapon-ind {
+  position: absolute;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  pointer-events: none;
+  z-index: var(--z-hud);
+}
+
+.wp {
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-family: var(--ff-heading);
+  font-size: var(--fs-sm);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.03);
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.wp.active {
+  border-color: var(--cyan);
+  color: var(--cyan);
+  background: rgba(0, 255, 255, 0.08);
+  box-shadow: 0 0 12px var(--cyan-glow), inset 0 0 8px rgba(0, 255, 255, 0.06);
+}
+
+/* ============================================================
+   9. Wave Announcement
+   ============================================================ */
+.wave-announce {
+  position: absolute;
+  top: 35%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--ff-heading);
+  font-size: var(--fs-3xl);
+  font-weight: 700;
+  color: var(--white);
+  text-shadow: 0 0 16px var(--cyan-glow), 0 0 32px rgba(0, 255, 255, 0.2);
+  opacity: 0;
+  pointer-events: none;
+  z-index: var(--z-hud);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+}
+
+/* ============================================================
+   10. Overlays (generic)
+   ============================================================ */
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+  z-index: var(--z-overlay);
+}
+
+.overlay.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ============================================================
+   11. Start Screen
+   ============================================================ */
+.title {
+  font-family: var(--ff-heading);
+  font-size: var(--fs-7xl);
+  font-weight: 900;
+  line-height: 1.1;
+  text-align: center;
+  background: linear-gradient(135deg, var(--cyan), var(--magenta), var(--gold));
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 20px rgba(0, 255, 255, 0.35));
+  animation: pulse-title 2s ease-in-out infinite alternate;
+}
+
+@keyframes pulse-title {
+  0%   { filter: drop-shadow(0 0 20px rgba(0, 255, 255, 0.35)); background-position: 0% 50%; }
+  100% { filter: drop-shadow(0 0 30px rgba(224, 64, 251, 0.4)); background-position: 100% 50%; }
+}
+
+.subtitle {
+  font-family: var(--ff-body);
+  font-size: var(--fs-xl);
+  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  margin-top: var(--sp-sm);
+}
+
+.prompt {
+  font-family: var(--ff-heading);
+  font-size: var(--fs-lg);
+  color: var(--cyan);
+  letter-spacing: 3px;
+  margin-top: var(--sp-xl);
+  animation: blink 1.2s ease-in-out infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.2; }
+}
+
+.controls-legend {
+  margin-top: 30px;
+  color: rgba(255, 255, 255, 0.35);
+  font-family: var(--ff-body);
+  font-size: var(--fs-md);
+  letter-spacing: 1px;
+  text-align: center;
+  line-height: 1.8;
+}
+
+/* ── Difficulty Select ── */
+.difficulty-select {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  margin-top: 20px;
+  pointer-events: auto;
+}
+
+.diff-btn {
+  font-family: var(--ff-heading);
+  font-size: 12px;
+  padding: 10px 24px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.5);
+  background: transparent;
+  cursor: pointer;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+}
+
+.diff-btn:hover {
+  border-color: var(--cyan);
+  color: var(--cyan);
+}
+
+.diff-btn.active {
+  background: rgba(0, 255, 255, 0.12);
+  border-color: var(--cyan);
+  color: var(--cyan);
+  box-shadow: 0 0 14px var(--cyan-glow), inset 0 0 10px rgba(0, 255, 255, 0.05);
+}
+
+/* ============================================================
+   12. Pause Screen
+   ============================================================ */
+.pause-title {
+  font-family: var(--ff-heading);
+  font-size: var(--fs-4xl);
+  color: var(--cyan);
+  text-shadow: 0 0 20px var(--cyan-glow), 0 0 40px rgba(0, 255, 255, 0.15);
+  letter-spacing: 6px;
+  text-transform: uppercase;
+}
+
+.pause-stats {
+  margin: 24px 0;
+  text-align: center;
+}
+
+.pause-stat {
+  font-family: var(--ff-heading);
+  font-size: var(--fs-lg);
+  color: #aaa;
+  margin: 8px 0;
+}
+
+.pause-stat span {
+  color: var(--white);
+  font-weight: 700;
+}
+
+.pause-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: var(--sp-md);
+  pointer-events: auto;
+  align-items: center;
+}
+
+/* ── Menu Buttons ── */
+.menu-btn {
+  font-family: var(--ff-heading);
+  font-size: var(--fs-md);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 14px 48px;
+  background: transparent;
+  border: 2px solid;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 220px;
+  text-align: center;
+}
+
+.menu-btn.resume {
+  border-color: var(--cyan);
+  color: var(--cyan);
+}
+
+.menu-btn.resume:hover {
+  background: rgba(0, 255, 255, 0.15);
+  box-shadow: 0 0 18px var(--cyan-glow), 0 0 36px rgba(0, 255, 255, 0.12);
+  transform: scale(1.05);
+}
+
+.menu-btn.main-menu {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.menu-btn.main-menu:hover {
+  background: rgba(255, 255, 0, 0.12);
+  box-shadow: 0 0 18px rgba(255, 255, 0, 0.4), 0 0 36px rgba(255, 171, 0, 0.15);
+  transform: scale(1.05);
+}
+
+.menu-btn.quit {
+  border-color: var(--red-bright);
+  color: var(--red-bright);
+}
+
+.menu-btn.quit:hover {
+  background: rgba(255, 68, 68, 0.12);
+  box-shadow: 0 0 18px rgba(255, 68, 68, 0.45), 0 0 36px rgba(255, 68, 68, 0.15);
+  transform: scale(1.05);
+}
+
+.menu-btn:active {
+  transform: scale(0.97);
+}
+
+/* ============================================================
+   13. Game Over Screen
+   ============================================================ */
+.game-over-title {
+  font-family: var(--ff-heading);
+  font-size: var(--fs-6xl);
+  font-weight: 900;
+  color: var(--red);
+  text-shadow: 0 0 20px rgba(255, 0, 60, 0.6), 0 0 40px rgba(255, 0, 60, 0.25);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+}
+
+.stat {
+  font-family: var(--ff-heading);
+  font-size: var(--fs-xl);
+  color: #aaa;
+  margin: 6px 0;
+}
+
+.stat span {
+  color: var(--white);
+  font-weight: 700;
+}
+
+.btn {
+  font-family: var(--ff-heading);
+  font-size: var(--fs-base);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 14px 40px;
+  border: 2px solid var(--cyan);
+  color: var(--cyan);
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: all 0.3s ease;
+  margin-top: var(--sp-md);
+}
+
+.btn:hover {
+  background: rgba(0, 255, 255, 0.15);
+  box-shadow: 0 0 18px var(--cyan-glow), 0 0 36px rgba(0, 255, 255, 0.12);
+  transform: scale(1.05);
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+/* ============================================================
+   14. Mobile Touch Controls
+   ============================================================ */
+#mobileControls {
+  display: none;
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: var(--z-hud);
+}
+
+/* ── Joystick ── */
+.joystick-area {
+  position: absolute;
+  bottom: 30px;
+  left: 30px;
+  width: 130px;
+  height: 130px;
+  pointer-events: auto;
+}
+
+.joystick-base {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  border: 2px solid rgba(0, 220, 255, 0.2);
+  position: relative;
+}
+
+.joystick-knob {
+  width: 50px;
+  height: 50px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 220, 255, 0.25);
+  border: 2px solid rgba(0, 220, 255, 0.5);
+  border-radius: 50%;
+  transition: transform 0.05s linear;
+}
+
+/* ── Fire Button ── */
+.fire-btn {
+  position: absolute;
+  bottom: 50px;
+  right: 40px;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: rgba(255, 50, 50, 0.15);
+  border: 3px solid rgba(255, 50, 50, 0.6);
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--ff-heading);
+  font-size: var(--fs-sm);
+  color: var(--red-bright);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease;
+  animation: fire-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes fire-pulse {
+  0%, 100% { box-shadow: 0 0 10px rgba(255, 50, 50, 0.3); }
+  50%      { box-shadow: 0 0 24px rgba(255, 50, 50, 0.55), 0 0 48px rgba(255, 50, 50, 0.2); }
+}
+
+.fire-btn:active {
+  background: rgba(255, 50, 50, 0.35);
+  transform: scale(0.92);
+}
+
+/* ── Weapon Switch Button ── */
+.weapon-switch-btn {
+  position: absolute;
+  bottom: 150px;
+  right: 50px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid rgba(0, 220, 255, 0.3);
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--ff-heading);
+  font-size: var(--fs-xs);
+  color: var(--cyan);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.weapon-switch-btn:active {
+  transform: scale(0.92);
+  background: rgba(0, 220, 255, 0.12);
+}
+
+/* ============================================================
+   15. Settings Button
+   ============================================================ */
+#settingsBtn {
+  position: absolute;
+  top: 66px;
+  right: 16px;
+  width: 38px;
+  height: 38px;
+  pointer-events: auto;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-radius: 10px;
+  border: 1px solid rgba(0, 220, 255, 0.25);
+  color: var(--cyan);
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: var(--z-pause);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+  line-height: 1;
+}
+
+#settingsBtn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 14px var(--cyan-glow);
+  background: rgba(0, 220, 255, 0.08);
+}
+
+#settingsBtn:active {
+  transform: scale(0.95);
+}
+
+/* ============================================================
+   16. Settings Panel
+   ============================================================ */
+#settingsPanel {
+  position: absolute;
+  top: 110px;
+  right: 16px;
+  pointer-events: auto;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: var(--glass-border);
+  border-radius: 12px;
+  padding: var(--sp-sm) 0;
+  z-index: var(--z-pause);
+  min-width: 180px;
+}
+
+.setting-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 16px;
+  gap: 16px;
+}
+
+.setting-label {
+  font-family: var(--ff-body);
+  font-size: var(--fs-base);
+  color: rgba(255, 255, 255, 0.7);
+  white-space: nowrap;
+}
+
+/* ── Toggle Switch ── */
+.toggle {
+  width: 40px;
+  height: 22px;
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.15);
+  cursor: pointer;
+  position: relative;
+  transition: background 0.3s ease;
+  flex-shrink: 0;
+}
+
+.toggle.on {
+  background: rgba(0, 220, 255, 0.4);
+}
+
+.toggle-knob {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--white);
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  transition: transform 0.3s ease;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+.toggle.on .toggle-knob {
+  transform: translateX(18px);
+}
+
+/* ============================================================
+   17. Boss Warning
+   ============================================================ */
+.boss-warning {
+  position: fixed;
+  inset: 0;
+  border: 4px solid transparent;
+  pointer-events: none;
+  z-index: var(--z-boss);
+}
+
+.boss-warning.active {
+  animation: border-flash 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes border-flash {
+  0%   { border-color: transparent; box-shadow: inset 0 0 40px rgba(255, 0, 40, 0); }
+  100% { border-color: rgba(255, 0, 40, 0.6); box-shadow: inset 0 0 60px rgba(255, 0, 40, 0.15); }
+}
+
+/* ============================================================
+   18. Screen Flash
+   ============================================================ */
+.screen-flash {
+  position: fixed;
+  inset: 0;
+  background: var(--white);
+  opacity: 0;
+  pointer-events: none;
+  z-index: var(--z-flash);
+}
+
+.screen-flash.active {
+  animation: flash 0.35s ease-out forwards;
+}
+
+@keyframes flash {
+  0%   { opacity: 0.7; }
+  100% { opacity: 0; }
+}
+
+/* ============================================================
+   19. Responsive — Mobile (≤ 768px)
+   ============================================================ */
+@media (max-width: 768px) {
+  .title {
+    font-size: var(--fs-3xl);
+  }
+
+  .subtitle {
+    font-size: var(--fs-base);
+  }
+
+  .hud-panel {
+    padding: 6px 10px;
+  }
+
+  .hud-panel .value {
+    font-size: var(--fs-lg);
+  }
+
+  .health-bar,
+  .shield-bar {
+    width: 100px;
+  }
+
+  .game-over-title {
+    font-size: var(--fs-3xl);
+  }
+
+  .pause-title {
+    font-size: var(--fs-xl);
+    font-size: 32px;
+  }
+
+  /* Mobile controls display is handled by JS based on touch capability */
+
+  .weapon-ind {
+    bottom: 140px;
+  }
+
+  .combo {
+    font-size: 32px;
+  }
+
+  .wave-announce {
+    font-size: 24px;
+  }
+
+  .difficulty-select {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .diff-btn {
+    padding: 8px 18px;
+    font-size: 11px;
+  }
+
+  .menu-btn {
+    width: 190px;
+    padding: 12px 36px;
+    font-size: 12px;
+  }
+
+  .controls-legend {
+    font-size: 11px;
+    padding: 0 var(--sp-md);
+  }
+}
+
+/* ============================================================
+   20. Utility Classes
+   ============================================================ */
+.hidden {
+  display: none !important;
+}
+
+/* ── Selection & tap prevention on all game UI ── */
+#ui, #ui * {
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ── Touch-action for game surface ── */
+canvas {
+  touch-action: none;
+}
+
+/* ── Focus outlines — visible but on-brand ── */
+button:focus-visible,
+.btn:focus-visible,
+.diff-btn:focus-visible,
+.menu-btn:focus-visible,
+.toggle:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 2px;
+}
