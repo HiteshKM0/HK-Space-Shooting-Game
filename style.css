@@ -231,7 +231,7 @@ canvas {
   border: 1px solid rgba(0, 220, 255, 0.3);
   color: var(--cyan);
   font-size: 20px;
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: center;
   cursor: pointer;
@@ -721,7 +721,7 @@ canvas {
   border: 1px solid rgba(0, 220, 255, 0.25);
   color: var(--cyan);
   font-size: 18px;
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: center;
   cursor: pointer;
